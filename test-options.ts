@@ -12,7 +12,7 @@ export const test = base.extend<TestOptions>({
     goHomePage: async({page}, use)=>{
       await page.goto('/')
         await use('')
-      console.log('go to homepage to booking hotel')
+      console.log('testing go to homepage')
     },
 
     pageManager: async({page}, use) => {

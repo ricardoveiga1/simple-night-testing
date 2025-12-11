@@ -7,47 +7,145 @@ export class HomePage extends HelperBase{
         super(page)
     }
 
-    destination = this.page.locator('.transition-colors').locator('.text-nowrap', {hasText: "Hotels"});
-    destinationInput = this.page.locator('input[id*="mantine"][id*="target"]').first()
-    searchInput = this.page.locator('input[type="text"]').last()
+    // Navbar -> Hotels
+    private get hotelsCategory() {
+        return this.page.getByTestId('category-search-bar-tab(static_hotels)');
+    }
 
-    datePicker = this.page.locator('input[placeholder="Select your dates"]')
+    // destination trigger (opens dropdown)
+    private get destinationTrigger() {
+        return this.page.getByTestId('category(static_hotels)_search-form_location_trigger');
+    }
+
+    // destination input (filled after trigger is open)
+    private get destinationInput() {
+        return this.page.getByTestId('category(static_hotels)_search-form_location_input');
+    }
+
+    // destination suggestion (parametrized by text)
+    private destinationSuggestion(destination: string) {
+        return this.page.locator('div.flex.items-center.gap-x-2').filter({
+            has: this.page.getByText(destination, { exact: true }),
+        });
+    }
+
+    private get datePickerTrigger() {
+        return this.page.getByTestId('category(static_hotels)_search-form_dates_trigger');
+    }
+
+    // Date confirmation button
+    private get dateDoneButton() {
+        return this.page.getByTestId('category(static_hotels)_search-form_dates_apply-button');
+    }
+
+    // Guests trigger
+    private get guestsTrigger() {
+        return this.page.getByTestId('category(static_hotels)_search-form_guests_trigger');
+    }
+
+    private get addAdultButton() {
+        return this.page.getByRole('button', { name: 'Add Adult' });
+    }
+
+    private get addChildButton() {
+        return this.page.getByRole('button', { name: 'Add Child' });
+    }
+
+    // search button
+    private get searchButton() {
+        return this.page.getByRole('button', { name: 'Search' });
+    }
+
+
+    // actions ------------------------->
+
+    // selects hotels in navbar
+    async selectHotelsCategory() {
+        await this.hotelsCategory.click();
+    }
+
+    // fill destination
+    async enterLocation(destination: string) {
+        await this.destinationTrigger.click();
+        await this.destinationInput.fill(destination);
+
+        const suggestion = this.destinationSuggestion(destination);
+        await suggestion.first().waitFor({ state: 'visible' });
+        await suggestion.first().click();
+    }
+
+    // Sets number of guests
+    async setGuests(adults: number, children: number) {
+        await this.guestsTrigger.click();
+
+        for (let i = 1; i < adults; i++) {
+            await this.addAdultButton.click();
+        }
+
+        for (let i = 0; i < children; i++) {
+            await this.addChildButton.click();
+        }
+    }
+
+    // click
+    async search() {
+        await this.searchButton.click();
+    }
+
+
+    // set date (start and end)
+    async pickDateRange(start: string, end: string) {
+        await this.datePickerTrigger.click();
+        await this.page.waitForTimeout(300);
+
+        const selectDate = async (dateStr: string) => {
+            const [year, month, day] = dateStr.split('-');
+
+            const dayButton = this.page.getByRole('button', {
+                name: '{Number(day)} ${this.monthName(Number(month))} ${year}',
+                exact: true,
+            });
+
+            const header = this.page.getByRole('button', {
+                name: '{this.monthName(Number(month))} ${year}',
+                exact: true,
+            });
+
+            let tries = 0;
+            while (!(await header.isVisible()) && tries < 24) {
+                await this.page.locator('button[data-direction="next"]').click();
+                await this.page.waitForTimeout(200);
+                tries++;
+            }
+
+            await dayButton.click();
+            await expect(dayButton).toHaveAttribute('data-selected', 'true', {timeout: 2000});
+            await this.page.waitForTimeout(300);
+        };
+
+        await selectDate(start);
+        await selectDate(start);
+        await selectDate(end);
+
+        if (await this.dateDoneButton.isVisible()) {
+            await this.dateDoneButton.click();
+        }
+    }
+
+
+
     doneButton = this.page.locator('button:has-text("Done")');
-
-    guestsBtn = this.page.locator('.group').getByRole('textbox', {name: 'Travelers'})
-    adultPlus = this.page.getByRole('button', {name: "Add Adult"})
-    childPlus = this.page.getByRole('button', {name: "Add Child"})
-
-    searchBtn = this.page.getByRole('button',{ name: "Search"})
-
-    async selectDestination(city: string) {
-        await this.destination.click();
-        await this.destinationInput.click()
-        await this.searchInput.fill(city);
-        await this.page.locator('div[role="option"]').first().click()
-        await expect(this.searchInput).toHaveValue('Miami')
-    }
-
-    async selectDates(start: string, end: string) {
-        await this.datePicker.click();
-        await this.page.getByTestId(`date-${start}`).click();
-        await this.page.getByTestId(`date-${end}`).click();
-        await this.page.getByRole('button', { name: 'Done' }).click();
-    }
-    async selectDatesAlt(start: string, end: string) {
-        await this.datePicker.click()
-        await this.page.locator('[class="mantine-focus-auto mx-10 font-medium text-lg m_f6645d97 mantine-DatePicker-calendarHeaderLevel m_87cf2631 mantine-UnstyledButton-root"]').first().click();
-        await this.page.getByTestId('category(static_hotels)_search-form_dates_calendar_day(2026-5-20)').click();
-        await this.page.locator('[class="mantine-focus-auto mx-10 font-medium text-lg m_f6645d97 mantine-DatePicker-calendarHeaderLevel m_87cf2631 mantine-UnstyledButton-root"](2026-5-22)').last().click();
-    }
-
-    async selectDatesAlternative(checkIn: { month: string, day: number }, checkOut: { month: string, day: number }): Promise<void> {
+    async selectDatesAlternative(checkIn: { month: string, day: number }, checkOut: { month: string, day: number }) {
         // Clicar no campo de datas
-        await this.datePicker.click()
+        await this.datePickerTrigger.click()
+        await this.page.waitForTimeout(300);
 
         // Navegar até o mês correto (máximo 12 tentativas)
         for (let i = 0; i < 12; i++) {
-            const monthHeader = this.page.locator(`button:has-text("${checkIn.month}")`);
+            const monthHeader = this.page.getByRole('button', {
+                name: '{this.monthName(Number(month))} ${year}',
+                exact: true,
+            });
             const isVisible = await monthHeader.isVisible().catch(() => false);
             if (isVisible) break;
 
@@ -89,24 +187,4 @@ export class HomePage extends HelperBase{
 
         await this.doneButton.click()
     }
-
-    async selectGuests(adults: number, children: number) {
-        await this.guestsBtn.click();
-        for (let i = 1; i < adults; i++) {
-            await this.adultPlus.click();
-        }
-        for (let i = 0; i < children; i++) {
-            await this.childPlus.click();
-        }
-        await this.page.getByRole('textbox', { name: "Child 1 Age"}).click()
-    }
-
-    async search() {
-        await this.searchBtn.click({timeout: 16000});
-        //await this.page.waitForLoadState('networkidle')
-        await this.page.waitForTimeout(20000)
-        expect(this.page.getByText('Search by Property Name').isVisible())
-
-    }
-
 }

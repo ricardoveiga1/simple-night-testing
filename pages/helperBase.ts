@@ -16,4 +16,6 @@ export class HelperBase {
     async scrollToElement(locator: Locator) {
         await locator.scrollIntoViewIfNeeded();
     }
+
+
 }

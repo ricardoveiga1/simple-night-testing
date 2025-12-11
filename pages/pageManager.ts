@@ -1,20 +1,21 @@
 import { Page } from "@playwright/test";
 import {HomePage} from "./homePage";
 import {HotelPage} from "./hotelPage";
-import {ResultsPage} from "./resultPage";
+import {MapViewPage} from "./mapViewPage";
 
 export class PageManager {
 
     private readonly page: Page
     private readonly homePage: HomePage
     private readonly hotelPage: HotelPage
-    private readonly resultPage: ResultsPage
+    private readonly mapViewPage: MapViewPage
 
     constructor(page: Page){
         this.page = page
         this.homePage = new HomePage(this.page)
         this.hotelPage = new HotelPage(this.page)
-        this.resultPage = new ResultsPage(this.page)
+
+        this.mapViewPage = new MapViewPage(this.page)
     }
 
     onHomePage(){
@@ -23,7 +24,7 @@ export class PageManager {
     onHotelPage(){
         return this.hotelPage
     }
-    onResultPage(){
-        return this.resultPage
+    onMapViewPage(){
+        return this.mapViewPage
     }
 }
