@@ -8,21 +8,17 @@ export class HomePage extends HelperBase{
     }
 
     destination = this.page.locator('.transition-colors').locator('.text-nowrap', {hasText: "Hotels"});
-    goingTo = this.page.getByRole('textbox', {name: "Going to"})
-    clearInput = this.page.locator('.absolute').locator('.bg-transparent')
     destinationInput = this.page.locator('input[id*="mantine"][id*="target"]').first()
     searchInput = this.page.locator('input[type="text"]').last()
 
     datePicker = this.page.locator('input[placeholder="Select your dates"]')
-
     doneButton = this.page.locator('button:has-text("Done")');
 
     guestsBtn = this.page.locator('.group').getByRole('textbox', {name: 'Travelers'})
-    adultPlus = this.page.getByRole('button', {name: "Add Adult"});
+    adultPlus = this.page.getByRole('button', {name: "Add Adult"})
     childPlus = this.page.getByRole('button', {name: "Add Child"})
 
-    searchBtn = this.page.getByRole('button',{ name: "Search"});
-
+    searchBtn = this.page.getByRole('button',{ name: "Search"})
 
     async selectDestination(city: string) {
         await this.destination.click();
@@ -38,15 +34,14 @@ export class HomePage extends HelperBase{
         await this.page.getByTestId(`date-${end}`).click();
         await this.page.getByRole('button', { name: 'Done' }).click();
     }
-    async selectDateRik(start: string, end: string) {
+    async selectDatesAlt(start: string, end: string) {
         await this.datePicker.click()
-        //(2026-5-20)
         await this.page.locator('[class="mantine-focus-auto mx-10 font-medium text-lg m_f6645d97 mantine-DatePicker-calendarHeaderLevel m_87cf2631 mantine-UnstyledButton-root"]').first().click();
         await this.page.getByTestId('category(static_hotels)_search-form_dates_calendar_day(2026-5-20)').click();
         await this.page.locator('[class="mantine-focus-auto mx-10 font-medium text-lg m_f6645d97 mantine-DatePicker-calendarHeaderLevel m_87cf2631 mantine-UnstyledButton-root"](2026-5-22)').last().click();
     }
 
-    async selectDatesIA(checkIn: { month: string, day: number }, checkOut: { month: string, day: number }): Promise<void> {
+    async selectDatesAlternative(checkIn: { month: string, day: number }, checkOut: { month: string, day: number }): Promise<void> {
         // Clicar no campo de datas
         await this.datePicker.click()
 
@@ -65,10 +60,10 @@ export class HomePage extends HelperBase{
             await this.page.waitForTimeout(800);
         }
 
-        // Aguardar calendário estar visível
+        // waiting
         await this.page.waitForTimeout(1000);
 
-        // Selecionar data de check-in - tentar diferentes formatos
+        // select datae check-in - tentar diferentes formatos
         let checkInButton = this.page.locator(`button[aria-label*="${checkIn.day} ${checkIn.month}"]`);
         let isVisible = await checkInButton.isVisible().catch(() => false);
 
@@ -81,7 +76,7 @@ export class HomePage extends HelperBase{
         await checkInButton.click();
         await this.page.waitForTimeout(800);
 
-        // Selecionar data de check-out
+        // select date check-out
         const monthName = checkOut.month.split(' ')[0];
         let checkOutButton = this.page.locator(`button[aria-label*="${checkOut.day} ${monthName}"]`)
         isVisible = await checkOutButton.isVisible().catch(() => false);
@@ -91,7 +86,7 @@ export class HomePage extends HelperBase{
         }
         await checkOutButton.click()
 
-        // Clicar em Done
+
         await this.doneButton.click()
     }
 
@@ -103,13 +98,15 @@ export class HomePage extends HelperBase{
         for (let i = 0; i < children; i++) {
             await this.childPlus.click();
         }
+        await this.page.getByRole('textbox', { name: "Child 1 Age"}).click()
     }
 
     async search() {
         await this.searchBtn.click({timeout: 16000});
-        await this.page.waitForLoadState('networkidle')
+        //await this.page.waitForLoadState('networkidle')
+        await this.page.waitForTimeout(20000)
         expect(this.page.getByText('Search by Property Name').isVisible())
-    }
 
+    }
 
 }

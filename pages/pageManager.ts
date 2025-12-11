@@ -3,8 +3,6 @@ import {HomePage} from "./homePage";
 import {HotelPage} from "./hotelPage";
 import {ResultsPage} from "./resultPage";
 
-
-
 export class PageManager {
 
     private readonly page: Page
@@ -19,7 +17,7 @@ export class PageManager {
         this.resultPage = new ResultsPage(this.page)
     }
 
-    navigateTo(){
+    onHomePage(){
         return this.homePage
     }
     onHotelPage(){

@@ -13,12 +13,8 @@ export class ResultsPage extends HelperBase{
 
     scoreFilter = this.page.getByRole('checkbox').filter({hasText: "Very Good (7+)"})
 
-    gridBtn = this.page.locator('button', { hasText: 'Grid' })
-    //locator('[data-variant="transparent"][data-testid*="layout-select_trigger"]');
-    //page.getByRole('button', { name: 'Grid' })
-        //this.page.locator('button', { hasText: 'Grid' })
-    //locator('.grid').locator('.ms-auto').locator('.rotate-90')
-    //getByRole('button', { name: "Grid"})
+    gridBtn = this.page.locator('[class="mantine-focus-auto mantine-active rounded-lg px-[12px] py-[11px] text-[16px]/[22px] transition-colors bg-brand hover:bg-brand-fill-pressed active:bg-brand-fill-hover text-primary-button-label data-[variant=white]:bg-white data-[variant=white]:text-primary-text data-[variant=white]:hover:bg-neutral-fill-text-dividers-stroke-disabled data-[variant=white]:active:bg-neutral-fill-background-secondary data-[variant=outline]:border data-[variant=outline]:border-neutral-fill-text-dividers-stroke-disabled data-[variant=outline]:bg-white data-[variant=outline]:text-primary-text data-[variant=outline]:hover:bg-neutral-fill-text-dividers-stroke-disabled data-[variant=outline]:active:bg-neutral-fill-background-secondary data-[variant=transparent]:bg-transparent data-[variant=transparent]:text-primary-text data-[variant=transparent]:hover:bg-primary-text data-[variant=transparent]:hover:bg-opacity-5 data-[variant=transparent]:active:bg-primary-text data-[variant=transparent]:active:bg-opacity-10 data-[disabled]:pointer-events-none data-[disabled]:!bg-neutral-fill-text-dividers-stroke-disabled data-[disabled]:!text-neutral-text-icons-disabled min-w-0 m_77c9d27d mantine-Button-root m_87cf2631 mantine-UnstyledButton-root"]')
+
     mapZoomIn = this.page.getByRole('option', {name:"Map"});
     hotelCards = this.page.getByRole('link', {name: "Go to hotel details"});
 
@@ -26,8 +22,6 @@ export class ResultsPage extends HelperBase{
         // await this.priceSliderMin.fill(min.toString());
         // await this.priceSliderMax.fill(max.toString());
         // await this.page.waitForTimeout(1000);
-
-        //aria-valuenow
 
         const priceSlider = this.page.locator('[class="mt-2 m_dd36362e mantine-Slider-root"]').getByRole('slider')
         await priceSlider.evaluate(node => {
@@ -71,13 +65,13 @@ export class ResultsPage extends HelperBase{
     }
 
     async selectMap(times = 2) {
-        //for (let i = 0; i < times; i++) {
+        for (let i = 0; i < times; i++) {
             await this.gridBtn.click();
             await this.mapZoomIn.click()
 
             await this.page.waitForTimeout(500);
 
-        //}
+        }
     }
 
     async zoomInMap(times: number = 2) {

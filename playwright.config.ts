@@ -16,10 +16,16 @@ export default defineConfig<TestOptions>({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+      launchOptions: {
+          args: ['--start-maximized'],
+      },
+      viewport: null,
+
 
      //baseURL: 'https://app.simplenight.com/',
-      baseQaURL: 'https://app.simplenight.com/',
-      baseStagingURL: 'https://app-staging-ex.simplenight.com/',
+      baseURL: process.env.DEV === '1' ? 'https://app.simplenight.com/dev'
+          : process.env.STAGING === '1' ? 'https://app.simplenight.com/staging'
+              : 'https://app.simplenight.com/',
 
     trace: 'on-first-retry',
   },
