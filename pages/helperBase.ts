@@ -1,4 +1,4 @@
-import {expect, Locator, Page} from "@playwright/test";
+import {expect, Page} from "@playwright/test";
 
 
 export class HelperBase {
@@ -13,7 +13,6 @@ export class HelperBase {
         await this.page.waitForTimeout(timeInSeconds * 1000)
     }
 
-
     private get datePickerTrigger() {
         return this.page.getByTestId('category(static_hotels)_search-form_dates_trigger');
     }
@@ -23,44 +22,63 @@ export class HelperBase {
         return this.page.getByTestId('category(static_hotels)_search-form_dates_apply-button');
     }
 
-    //category(static_hotels)_search-form_dates_calendar_day(2026-3-18)
+
+    // Retorna o nome do mês (1-based)
+    private monthName(month: number): string {
+        const names = [
+            'Jan','Feb','Mar','Apr','May','Jun',
+            'Jul','Aug','Sep','Oct','Nov','Dec'
+        ];
+        return names[month - 1] ?? '';
+    }
+
     // set date (start and end)
     async pickDateRange(start: string, end: string) {
         await this.datePickerTrigger.click();
-        await this.page.waitForTimeout(500);
-
+        await this.page.waitForTimeout(300);
 
         const selectDate = async (dateStr: string) => {
             const [year, month, day] = dateStr.split('-');
-
-            const dayButton = this.page.getByRole('button', {
-                name: `${Number(day)} ${this.monthName(Number(month))} ${year}`,
-                exact: true,
-            });
+            const targetMonthLabel = `${this.monthName(Number(month))} ${year}`;
 
             const header = this.page.getByRole('button', {
                 name: `${this.monthName(Number(month))} ${year}`,
                 exact: true,
             });
 
-            let tries = 0;
-            while (!(await header.isVisible()) && tries < 24) {
+            const dayButton = this.page.getByRole('button', {
+                name: `${Number(day)} ${this.monthName(Number(month))} ${year}`,
+                exact: true,
+            });
+            console.log("header" + header)
+            console.log("day" + dayButton)
+            console.log("target month label" + targetMonthLabel)
+
+
+            let attempts = 0;
+            while (!(await header.isVisible()) && attempts < 12) {
                 await this.page.locator('button[data-direction="next"]').click();
-                await this.page.waitForTimeout(200);
-                tries++;
+                await this.page.waitForTimeout(150);
+                attempts++;
             }
 
+            await expect(header).toBeVisible({ timeout: 2000 });
+
+            // click day
             await dayButton.click();
-            await expect(dayButton).toHaveAttribute('data-selected', 'true', {timeout: 2000});
-            await this.page.waitForTimeout(300);
+            await expect(dayButton).toHaveAttribute('data-selected', 'true', { timeout: 2000 });
+
+            await this.waitNumberOfSeconds(5)
         };
 
-        await selectDate(start);
+        // select start and end dates
         await selectDate(start);
         await selectDate(end);
 
+        // finalize date selection
         if (await this.dateDoneButton.isVisible()) {
             await this.dateDoneButton.click();
         }
     }
+
 }

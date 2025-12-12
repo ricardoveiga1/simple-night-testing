@@ -27,7 +27,7 @@ export class MapViewPage extends HelperBase{
         await this.waitNumberOfSeconds(10)
     }
 
-    async zoomUntilMarkers(minMarkers: number = 2, maxTries: number = 6) {
+    async zoomUntilMarkers(minMarkers: number = 2, maxTries: number = 10) {
         let tries = 0;
         while (tries < maxTries) {
             const count = await this.hotelMarkers.count();
@@ -44,7 +44,7 @@ export class MapViewPage extends HelperBase{
     }
 
     async selectHotelMarker() {
-        await this.zoomUntilMarkers(4);
+        await this.zoomUntilMarkers(6);
 
         const marker = this.hotelMarkers.first();
         const maxRetries = 3;

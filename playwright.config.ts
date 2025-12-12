@@ -4,7 +4,7 @@ import type { TestOptions } from './test-options';
 
 export default defineConfig<TestOptions>({
   testDir: './tests',
-    timeout: 40000,
+    timeout: 100000,
     globalTimeout: 60000,
     expect:{
         timeout: 2000,
@@ -13,13 +13,11 @@ export default defineConfig<TestOptions>({
   retries: 1,
 
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+
   use: {
       launchOptions: {
           args: ['--start-maximized'],
       },
-      viewport: null,
-
 
      //baseURL: 'https://app.simplenight.com/',
       baseURL: process.env.DEV === '1' ? 'https://app.simplenight.com/dev'

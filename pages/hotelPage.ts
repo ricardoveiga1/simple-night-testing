@@ -20,7 +20,7 @@ export class HotelPage extends HelperBase{
     //     return Number(text);
     // }
 
-    //price range
+    //card hotel info
     private get cardRoot(): Locator {
         return this.page.locator('[data-map-info-window-id]');
     }
@@ -108,6 +108,7 @@ export class HotelPage extends HelperBase{
     }
 
 
+    //building price range
     async setPriceRange(min: number, max: number) {
         // await this.priceSliderMin.fill(min.toString());
         // await this.priceSliderMax.fill(max.toString());
