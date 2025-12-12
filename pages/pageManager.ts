@@ -14,7 +14,6 @@ export class PageManager {
         this.page = page
         this.homePage = new HomePage(this.page)
         this.hotelPage = new HotelPage(this.page)
-
         this.mapViewPage = new MapViewPage(this.page)
     }
 
@@ -27,4 +26,5 @@ export class PageManager {
     onMapViewPage(){
         return this.mapViewPage
     }
+
 }

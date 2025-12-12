@@ -7,20 +7,18 @@ export class HotelPage extends HelperBase{
         super(page)
     }
 
-    price = this.page.getByTestId('hotel-price');
-    score = this.page.getByTestId('hotel-score');
-
-    async getPrice() {
-        const text = await this.price.textContent();
-        return Number(text?.replace(/[^0-9]/g, ''));
-    }
-
-    async getScore(){
-        const text = await this.score.textContent();
-        return Number(text);
-    }
-
-
+    // price = this.page.getByTestId('hotel-price');
+    // score = this.page.getByTestId('hotel-score');
+    //
+    // async getPrice() {
+    //     const text = await this.price.textContent();
+    //     return Number(text?.replace(/[^0-9]/g, ''));
+    // }
+    //
+    // async getScore(){
+    //     const text = await this.score.textContent();
+    //     return Number(text);
+    // }
 
     //price range
     private get cardRoot(): Locator {
@@ -72,14 +70,14 @@ export class HotelPage extends HelperBase{
         expect(price).toBeLessThanOrEqual(max);
     }
 
+    //building
     async validateGuestScore(minRating: number) {
         const scoreText = await this.ratingValue.textContent();
         const score = parseFloat(scoreText?.trim() || 'NaN');
         expect(score).toBeGreaterThanOrEqual(minRating);
     }
 
-
-    //changing to map view
+    //switch to map view
     private get layoutDropdownTrigger() {
         return this.page.locator('[data-testid="category(static_hotels)_search-results_layout-select_trigger"]');
     }
@@ -88,19 +86,14 @@ export class HotelPage extends HelperBase{
         return this.page.locator('[data-testid="category(static_hotels)_search-results_layout-select_option(map)"]');
     }
 
-    //score
-    private guestScoreFilter(label: string) {
-        return this.page.locator('label').filter({ hasText: label });
-    }
-
-    async switchLayout(option: string) {
-        await this.layoutDropdownTrigger.click();
-        //await this.layoutOption(option).click();
-    }
-
     async switchLayoutMap() {
         await this.layoutDropdownTrigger.click();
         await this.layoutOption().click();
+    }
+
+    //score
+    private guestScoreFilter(label: string) {
+        return this.page.locator('label').filter({ hasText: label });
     }
 
     async setGuestScore(minRating: number) {
@@ -114,21 +107,6 @@ export class HotelPage extends HelperBase{
         await this.waitNumberOfSeconds((10))
     }
 
-
-    hotelCards = this.page.getByRole('link', {name: "Go to hotel details"});
-    async zoomInMap(times: number = 2) {
-        const map = this.page.locator('.gm-style');
-        await map.hover();
-        await this.page.mouse.wheel(0, -1000); // negativo = zoom in
-
-        await this.page.waitForTimeout(5000)
-        console.log("zoom test")
-    }
-
-    async selectAnyHotel() {
-        await this.hotelCards.click();
-        await this.page.waitForLoadState('networkidle');
-    }
 
     async setPriceRange(min: number, max: number) {
         // await this.priceSliderMin.fill(min.toString());

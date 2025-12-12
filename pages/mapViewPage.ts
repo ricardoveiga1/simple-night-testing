@@ -24,7 +24,7 @@ export class MapViewPage extends HelperBase{
             expect(this.mapContainer).toBeVisible(),
         ]);
         await this.page.evaluate(() => window.scrollTo(0, 0));
-        await this.page.waitForTimeout(1000);
+        await this.waitNumberOfSeconds(10)
     }
 
     async zoomUntilMarkers(minMarkers: number = 2, maxTries: number = 6) {
@@ -33,7 +33,7 @@ export class MapViewPage extends HelperBase{
             const count = await this.hotelMarkers.count();
 
             if (count >= minMarkers) {
-                return; // don't click here
+                return;
             }
             await this.mapContainer.hover();
             await this.page.mouse.wheel(0, -7500);
@@ -44,7 +44,7 @@ export class MapViewPage extends HelperBase{
     }
 
     async selectHotelMarker() {
-        await this.zoomUntilMarkers(3);
+        await this.zoomUntilMarkers(4);
 
         const marker = this.hotelMarkers.first();
         const maxRetries = 3;
@@ -59,8 +59,7 @@ export class MapViewPage extends HelperBase{
             if (await card.isVisible({timeout: 2000}).catch(() => false)) {
                 return;
             }
-
-            await this.page.waitForTimeout(1500);
+            await this.page.waitForTimeout(2000);
         }
         throw new Error('Failed to open hotel card after retries');
     }

@@ -4,14 +4,13 @@ import type { TestOptions } from './test-options';
 
 export default defineConfig<TestOptions>({
   testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+    timeout: 40000,
+    globalTimeout: 60000,
+    expect:{
+        timeout: 2000,
+    },
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  retries: 1,
 
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
